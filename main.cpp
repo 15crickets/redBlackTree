@@ -3,12 +3,19 @@
 #include "Node.h"
 #include <vector>
 #include <fstream>
+
+
 using namespace std;
 
 void add(Node* &root, Node* current, Node* newNode);
 void print(Node* current, int count);
 bool search(Node* current, int value);
 void remove(int direction, Node* current, int value);
+void caseThree(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode);
+void caseFour(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode);
+void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode);
+void fixTree(Node* &root, Node* current);
+
 
 int main(){
     Node* root = NULL;
@@ -63,11 +70,15 @@ int main(){
             }
         }
         else if(strcmp(choice, "REMOVE") == 0){
-            int value;
+	  /*
+	  int value;
             cout << "What number would you like to remove? " << endl;
             cin >> value;
             cin.get();
-            remove(0, root, value);
+            
+	    remove(0, root, value);
+	  */
+	  cout << "Temporarily out of service, please try again later" << endl;
         }
         else if(strcmp(choice, "SEARCH") == 0){
             int value;
@@ -109,6 +120,7 @@ bool search(Node* current, int value){
     return false;
 }
 
+/*
 void remove(int direction, Node* current, int value){
     if(current->getInformation() == value){
         if(current->getRight() == NULL && current->getLeft() == NULL){
@@ -170,6 +182,71 @@ void remove(int direction, Node* current, int value){
     }
 
 }
+*/
+
+void caseThree(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
+  parent->setColor('b');
+  uncle->setColor('b');
+  grandparent->setColor('r');
+  fixTree(root, grandparent);
+}
+
+void caseFour(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
+
+
+
+}
+
+void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
+
+
+}
+
+void fixTree(Node* &root, Node* current){
+  if(root != NULL){
+    if(root->getColor() == 'r'){
+      cout << "Case1" << endl;
+      root->setColor('b');
+    }
+    if(current->getParent() != NULL){
+      if(current->getParent()->getColor() == 'b'){
+	cout << "Case2" << endl;
+	return;
+      }
+      if(current->getParent()->getParent() != NULL){
+	if(current->getParent()->getUncle() != NULL){
+	  if(current->getParent()->getColor() == 'r' && current->getParent()->getUncle()->getColor() == 'r'){
+	    cout << "Case3" << endl;
+	    caseThree(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	  }
+	  if(current->getParent()->getColor() == 'r' && current->getParent()->getUncle()->getColor() == 'b'){
+	    if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() < current->getInformation()){
+	      caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	      cout << "Case4" << endl;
+	    }
+	    else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() >= current->getInformation()){
+	      cout << "Case4" << endl;
+	      caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	    }
+	    
+	    if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getInformation() < current->getParent()->getInformation()){
+	      cout << "Case5" << endl;
+	      caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	    }
+	    else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getInformation() >= current->getParent()->getInformation()){
+	      cout << "Case5" << endl;
+	      caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	    }
+	    
+	  }
+	}
+      }
+    }
+  }
+  
+ 
+
+}
 
 void add(Node* &root, Node* current, Node* newNode){
     if(root == NULL){
@@ -193,9 +270,65 @@ void add(Node* &root, Node* current, Node* newNode){
             add(root, current->getRight(), newNode);
         }
     }
+    fixTree(root, newNode);
 
 }
 
+//pretty sure this add is useless
+
+/*
+void add(Node* &root, Node* current, Node* newNode){
+    if(root == NULL){
+        root = newNode;
+	root->setColor('b');
+    }
+    else if(current->getInformation() >= newNode->getInformation()){
+        if(current->getLeft() == NULL){
+            current->setLeft(newNode);
+	    newNode->setParent(current);
+	    if(current->getColor() != 'b'){
+	      if(current->getUncle()->getColor() == 'r'){
+		caseThree(root, current->getParent(), current, current->getUncle(), newNode);
+	      }
+	      else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() <= current->getInformation()){
+		caseFour(root, current->getParent(), current, current->getUncle(), newNode);
+	      }
+	      else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() > current->getInformation()){
+		caseFive(root, current->getParent(), current, current->getUncle(), newNode);
+	      }
+	      
+	    }
+        }
+        else{
+            add(root, current->getLeft(), newNode);
+        }
+    }
+    else if(current->getInformation() < newNode->getInformation()){
+        if(current->getRight() == NULL){
+            current->setRight(newNode);
+            newNode->setParent(current);
+	    if(current->getColor() != 'b'){
+              if(current->getUncle()->getColor() == 'r'){
+                caseThree(root, current->getParent(), current, current->getUncle(), newNode);
+              }
+              else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() >= current->getInformation()){
+                caseFour(root, current->getParent(), current, current->getUncle(), newNode);
+              }
+              else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() < current->getInformation()){
+                caseFive(root, current->getParent(), current, current->getUncle(), newNode);
+              }
+
+            }
+        }
+        else{
+            add(root, current->getRight(), newNode);
+        }
+    }
+
+  
+
+}
+*/
 void print(Node* current, int count){
     if(current->getLeft() != NULL){
         print(current->getLeft(), count + 1);
@@ -203,7 +336,7 @@ void print(Node* current, int count){
     for(int i = 0; i < count; i++){
         cout << '\t';
     }
-    cout << current->getInformation() << endl;
+    cout << current->getInformation() << " " << current->getColor() << endl;
     if(current->getRight() != NULL){
         print(current->getRight(), count + 1);
     }

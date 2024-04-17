@@ -9,15 +9,29 @@ Node:: Node(){
   left = NULL;
   right = NULL;
   parent = NULL;
+  color = 'r';
 }
 
 //destructor
 Node :: ~Node(){
   parent = NULL;
 }
+char Node :: getColor(){
+  return color;
 
-void Node :: setColor(bool newColor){
-    isRed = newColor;
+}
+Node* Node::getUncle(){
+  Node* uncle = new Node();
+  if(this->getParent()->getInformation() <= this->getInformation()){
+    uncle = this->getParent()->getLeft();
+  }
+  else if(this->getParent()->getInformation() > this->getInformation()){
+    uncle = this->getParent()->getRight();
+  }
+  return uncle;
+}
+void Node :: setColor(char newColor){
+    color = newColor;
 }
 //sets the current node's right node.
 void Node :: setRight(Node* newRight){

@@ -11,13 +11,15 @@ class Node{
   Node();
   ~Node();
   //initializing variables
-  bool isRed = true;
+  char color = 'r';
   Node* parent;
   Node* left;
   Node* right;
   int data;
   //function prototypes
-  void setColor(bool newColor);
+  void setColor(char newColor);
+  char getColor();
+  Node* getUncle();
   void setRight(Node* newRight);
   void setLeft(Node* newLeft);
   Node* getRight();
