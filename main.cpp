@@ -189,17 +189,101 @@ void caseThree(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* 
   uncle->setColor('b');
   grandparent->setColor('r');
   fixTree(root, grandparent);
+  print(root, 0);
 }
 
 void caseFour(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
+  cout << "Entered case four now" << endl;
+  if(newNode->getInformation() >= parent->getInformation()){
+    Node* tempNode = newNode->getLeft();
+    newNode->setParent(grandparent);
+    grandparent->setLeft(newNode);
+    newNode->setLeft(parent);
+    parent->setRight(tempNode);
+    parent->setParent(newNode);
 
-
-
+  }
+  else{
+    Node* tempNode = newNode->getRight();
+    newNode->setParent(grandparent);
+    grandparent->setRight(newNode);
+    newNode->setRight(parent);
+    parent->setLeft(tempNode);
+    parent->setParent(newNode);
+  }
+  print(root, 0);
 }
 
 void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
-
-
+  cout << "Entered case five" << endl;
+  cout << "CURRENT: " << newNode->getInformation() << endl;
+  cout << "PARENT: " << parent->getInformation() << endl;
+  cout << "GRANDPARENT: " << grandparent->getInformation() << endl;
+  bool changeRoot = false;
+  if(grandparent == root){
+    changeRoot = true;
+  }
+  cout << "HI" << endl;
+  if(parent->getInformation() > newNode->getInformation()){
+    cout << "TERRIBLE" << endl;
+    Node* tempNode = parent->getRight();
+    
+    if(grandparent->getParent() != NULL){
+      parent->setParent(grandparent->getParent());
+      if(grandparent->getParent()->getInformation() > grandparent->getInformation()){
+	grandparent->getParent()->setLeft(parent);
+      }
+      else{
+	grandparent->getParent()->setRight(parent);
+      }
+    }
+    
+    if(tempNode == NULL){
+      cout << "NULLLLL" << endl;
+    }
+    cout << "1" << endl;
+    parent->setRight(grandparent);
+    cout << "2" << endl;
+    grandparent->setParent(parent);
+    cout << "3" << endl;
+    grandparent->setLeft(tempNode);
+    cout << "4" << endl;
+    cout << "GRANDPARENT: " << grandparent->getInformation() << endl;
+    if(tempNode != NULL){
+      tempNode->setParent(grandparent);
+    }
+    cout << "5" << endl;
+    parent->setColor('b');
+    cout << "6" << endl;
+    grandparent->setColor('r');
+  }
+  else{
+    Node* tempNode = parent->getLeft();
+    if(grandparent->getParent() != NULL){
+      parent->setParent(grandparent->getParent());
+      if(grandparent->getParent()->getInformation() > grandparent->getInformation()){
+        grandparent->getParent()->setLeft(parent);
+      }
+      else{
+        grandparent->getParent()->setRight(parent);
+      }
+    }
+    parent->setLeft(grandparent);
+    grandparent->setParent(parent);
+    grandparent->setRight(tempNode);
+    if(tempNode != NULL){
+      tempNode->setParent(grandparent);
+    }
+    parent->setColor('b');
+    grandparent->setColor('r');
+    //cout << grandparent->getRight()->getInformation() << endl;
+    
+  }
+  cout << "exited case 5" << endl;
+  if(changeRoot == true){
+    root = parent;
+  }
+  print(root, 0);
 }
 
 void fixTree(Node* &root, Node* current){
@@ -209,42 +293,55 @@ void fixTree(Node* &root, Node* current){
       root->setColor('b');
     }
     if(current->getParent() != NULL){
+      cout << "PARENT COLOR: " << current->getParent()->getColor() << endl;
       if(current->getParent()->getColor() == 'b'){
 	cout << "Case2" << endl;
 	return;
       }
       if(current->getParent()->getParent() != NULL){
-	if(current->getParent()->getUncle() != NULL){
-	  if(current->getParent()->getColor() == 'r' && current->getParent()->getUncle()->getColor() == 'r'){
-	    cout << "Case3" << endl;
-	    caseThree(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
-	  }
-	  if(current->getParent()->getColor() == 'r' && current->getParent()->getUncle()->getColor() == 'b'){
-	    if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() < current->getInformation()){
-	      caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
-	      cout << "Case4" << endl;
-	    }
-	    else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() >= current->getInformation()){
-	      cout << "Case4" << endl;
-	      caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
-	    }
-	    
-	    if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getInformation() < current->getParent()->getInformation()){
-	      cout << "Case5" << endl;
-	      caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
-	    }
-	    else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getInformation() >= current->getParent()->getInformation()){
-	      cout << "Case5" << endl;
-	      caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
-	    }
-	    
-	  }
+	if(current->getParent()->getUncle() == NULL){
+	  cout << "UNCLE IS NULL" << endl;
 	}
-      }
+	if(current->getParent()->getColor() == 'r' && (current->getParent()->getUncle() != NULL && current->getParent()->getUncle()->getColor() == 'r')){
+	  cout << "Case3" << endl;
+	  caseThree(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	}
+	if(current->getParent()->getColor() == 'r' && (current->getParent()->getUncle() == NULL || current->getParent()->getUncle()->getColor() == 'b')){
+	  cout << "IN HERE" << endl;
+	  if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() < current->getInformation()){
+	    caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	    cout << "Case4" << endl;
+	    current = current->getLeft();
+	  }
+	  else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() >= current->getInformation()){
+	    cout << "Case4" << endl;
+	    caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	    current = current->getRight();
+	  }
+
+	  cout << "HI" << endl;
+	  if(current == NULL){
+	    cout << "Current is null" << endl;
+	  }
+	  cout << "Current: " << current->getInformation() << endl;
+	  cout << "Parent: " << current->getParent()->getInformation() << endl;
+	  cout << "Grandparent: " << current->getParent()->getParent()->getInformation() << endl;
+
+	  print(root, 0);
+	  if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getInformation() < current->getParent()->getInformation()){
+	    cout << "Case5" << endl;
+	    caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	    }
+	  else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getInformation() >= current->getParent()->getInformation()){
+	    cout << "Case5" << endl;
+	    caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
+	  }
+	  
+	}
     }
   }
   
- 
+    }
 
 }
 
@@ -259,6 +356,7 @@ void add(Node* &root, Node* current, Node* newNode){
         }
         else{
             add(root, current->getLeft(), newNode);
+	    return;
         }
     }
     else if(current->getInformation() < newNode->getInformation()){
@@ -268,6 +366,7 @@ void add(Node* &root, Node* current, Node* newNode){
         }
         else{
             add(root, current->getRight(), newNode);
+	    return;
         }
     }
     fixTree(root, newNode);
