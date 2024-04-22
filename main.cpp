@@ -1,3 +1,10 @@
+/*
+  Author: Vikram Vasudevan
+  Date: 4/22/2024
+  Description: This code inserts numbers into a red-black tree.
+ */
+
+
 #include <iostream>
 #include <cstring>
 #include "Node.h"
@@ -7,6 +14,7 @@
 
 using namespace std;
 
+//function prototypes
 void add(Node* &root, Node* current, Node* newNode);
 void print(Node* current, int count);
 bool search(Node* current, int value);
@@ -16,22 +24,28 @@ void caseFour(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* n
 void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode);
 void fixTree(Node* &root, Node* current);
 
-
+//main
 int main(){
+  
+  //creating root and bool for while loop
     Node* root = NULL;
-
     bool stillRunning = true;
+    //while loop where code runs
     while(stillRunning == true){
-        cout << "What would you like to do? ADD, REMOVE, SEARCH, PRINT, or QUIT " << endl;
+      //prompting users for choice
+        cout << "What would you like to do? ADD, PRINT, or QUIT " << endl;
         char choice[50];
         cin.get(choice, 50);
         cin.get();
+	//called if user wants to add numbers
         if(strcmp(choice, "ADD") == 0){
             char input[50];
             char method;
+	    //determining adding method
             cout << "Would you like to enter by file (f) or by console (c)? " << endl;
             cin >> method;
             cin.get();
+	    //adding by console
             if(method == 'c'){
                 cout << "How many numbers will you be entering? " << endl;
                 int numNums;
@@ -40,17 +54,16 @@ int main(){
                 cout << "Enter your string of numbers: " << endl;
                 for(int i = 0; i < numNums; i++){
                     int tempInt;
-                    cout << "INSIDE?" << endl;
                     cin >> tempInt;
-                    cout << tempInt << endl;
-                    cout << "HI" << endl;
                     cin.get();
                     Node* newNode = new Node();
                     newNode->setInformation(tempInt);
+		    //calling add
                     add(root, root, newNode);
                 }  
             
             }
+	  //adding by file
             else if(method == 'f'){
                 vector<int> nums;
                 fstream first_stream;
@@ -63,38 +76,18 @@ int main(){
                 for(iter = nums.begin(); iter < nums.end(); iter++){
                     Node* newNode = new Node();
                     newNode->setInformation(*iter);
-                    add(root, root, newNode);
+		    //calling add function
+		    add(root, root, newNode);
                 }
 
 
             }
         }
-        else if(strcmp(choice, "REMOVE") == 0){
-	  /*
-	  int value;
-            cout << "What number would you like to remove? " << endl;
-            cin >> value;
-            cin.get();
-            
-	    remove(0, root, value);
-	  */
-	  cout << "Temporarily out of service, please try again later" << endl;
-        }
-        else if(strcmp(choice, "SEARCH") == 0){
-            int value;
-            cout << "What number would you like to search for? " << endl;
-            cin >> value;
-            cin.get();
-            if(search(root, value) == true){
-                cout << "That value exists in the tree" << endl;
-            }
-            else{
-                cout << "That value doesn't exist in the tree" << endl;
-            }
-        }
+      //calling print
         else if(strcmp(choice, "PRINT") == 0){
             print(root, 0);
         }
+      //exiting while loop
         else if(strcmp(choice, "QUIT") == 0){
             stillRunning = false;
         }
@@ -103,97 +96,20 @@ int main(){
     
 }
 
-bool search(Node* current, int value){
-    if(value > current->getInformation()){
-        if(current->getRight() != NULL){
-            return search(current->getRight(), value);
-        }
-    }
-    else if(value < current->getInformation()){
-        if(current->getLeft() != NULL){
-            return search(current->getLeft(), value);
-        }
-    }
-    else if(value == current->getInformation()){
-        return true;
-    }
-    return false;
-}
-
-/*
-void remove(int direction, Node* current, int value){
-    if(current->getInformation() == value){
-        if(current->getRight() == NULL && current->getLeft() == NULL){
-            if(current->getParent() != NULL){
-                if(direction == 0){
-                    current->getParent()->setLeft(NULL);
-                }
-                else if(direction == 1){
-                    current->getParent()->setRight(NULL);
-                }
-            }
-            delete current;
-        }
-        else if(current->getLeft() == NULL){
-            cout << "1" << endl;
-            if(direction == 0){
-                current->getParent()->setLeft(current->getRight());
-            }
-            else if(direction == 1){
-                current->getParent()->setRight(current->getRight());
-            }
-            current->getRight()->setParent(current->getParent());
-            delete current;
-        }
-        else if(current->getRight() == NULL){
-            cout << current->getParent()->getInformation() << endl;
-            if(direction == 0){
-                current->getParent()->setLeft(current->getLeft());
-            }
-            else if(direction == 1){
-                current->getParent()->setRight(current->getLeft());
-            }
-            current->getLeft()->setParent(current->getParent());
-            delete current;
-        }
-        else{
-            Node* tempNode = current->getRight();
-            int counter = 0;
-            while(tempNode->getLeft() != NULL){
-                tempNode = tempNode->getLeft();
-                counter++;
-            }
-            current->setInformation(tempNode->getInformation());
-            if(counter == 0){
-                current->setRight(tempNode->getRight());
-                tempNode->getParent()->setRight(tempNode->getRight());
-            }
-            else{
-                tempNode->getParent()->setLeft(tempNode->getLeft());
-            }
-            delete tempNode;
-        }
-    }
-    else if(current->getInformation() > value){
-        remove(0, current->getLeft(), value);
-    }
-    else if(current->getInformation() < value){
-        remove(1, current->getRight(), value);
-    }
-
-}
-*/
-
+//this function is called when case 3 occurs, and it fixes the tree.
 void caseThree(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
+  //changing node colors.
   parent->setColor('b');
   uncle->setColor('b');
   grandparent->setColor('r');
+  //recursively calling fixTree again.
   fixTree(root, grandparent);
-  print(root, 0);
 }
 
+
+//this function is called when case 4 occurs, and it changes the tree before case 5 is called to finally fix the tree.
 void caseFour(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
-  cout << "Entered case four now" << endl;
+  //determining which direction the child is in and fixing the tree accordingly.
   if(newNode->getInformation() >= parent->getInformation()){
     Node* tempNode = newNode->getLeft();
     newNode->setParent(grandparent);
@@ -211,23 +127,19 @@ void caseFour(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* n
     parent->setLeft(tempNode);
     parent->setParent(newNode);
   }
-  print(root, 0);
 }
 
+//this function is called when case 5 occurs, and it fixes the tree.
 void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* newNode){
-  cout << "Entered case five" << endl;
-  cout << "CURRENT: " << newNode->getInformation() << endl;
-  cout << "PARENT: " << parent->getInformation() << endl;
-  cout << "GRANDPARENT: " << grandparent->getInformation() << endl;
+  //checking to see if the root needs to be altered.
   bool changeRoot = false;
   if(grandparent == root){
     changeRoot = true;
   }
-  cout << "HI" << endl;
+  //checking to see which direction the node is in.
   if(parent->getInformation() > newNode->getInformation()){
-    cout << "TERRIBLE" << endl;
     Node* tempNode = parent->getRight();
-    
+    //tree rotation
     if(grandparent->getParent() != NULL){
       parent->setParent(grandparent->getParent());
       if(grandparent->getParent()->getInformation() > grandparent->getInformation()){
@@ -237,27 +149,19 @@ void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* n
 	grandparent->getParent()->setRight(parent);
       }
     }
-    
-    if(tempNode == NULL){
-      cout << "NULLLLL" << endl;
-    }
-    cout << "1" << endl;
+    //resetting links
     parent->setRight(grandparent);
-    cout << "2" << endl;
     grandparent->setParent(parent);
-    cout << "3" << endl;
     grandparent->setLeft(tempNode);
-    cout << "4" << endl;
-    cout << "GRANDPARENT: " << grandparent->getInformation() << endl;
     if(tempNode != NULL){
       tempNode->setParent(grandparent);
     }
-    cout << "5" << endl;
+    //resetting colors
     parent->setColor('b');
-    cout << "6" << endl;
     grandparent->setColor('r');
   }
   else{
+    //tree rotation
     Node* tempNode = parent->getLeft();
     if(grandparent->getParent() != NULL){
       parent->setParent(grandparent->getParent());
@@ -268,72 +172,57 @@ void caseFive(Node* &root, Node* grandparent, Node* parent, Node* uncle, Node* n
         grandparent->getParent()->setRight(parent);
       }
     }
+    //resetting links
     parent->setLeft(grandparent);
     grandparent->setParent(parent);
     grandparent->setRight(tempNode);
     if(tempNode != NULL){
       tempNode->setParent(grandparent);
     }
+    //resetting colors
     parent->setColor('b');
     grandparent->setColor('r');
-    //cout << grandparent->getRight()->getInformation() << endl;
-    
   }
-  cout << "exited case 5" << endl;
+  //changing root, and setting it's parent to NULL.
   if(changeRoot == true){
     root = parent;
+    root->setParent(NULL);
   }
-  print(root, 0);
 }
 
+//overarching function that calls each case to fix the tree.
 void fixTree(Node* &root, Node* current){
+  //case 1, after adding root, set its color to black.
   if(root != NULL){
     if(root->getColor() == 'r'){
-      cout << "Case1" << endl;
       root->setColor('b');
     }
+    //case 2, if parent is black just add new node.
     if(current->getParent() != NULL){
-      cout << "PARENT COLOR: " << current->getParent()->getColor() << endl;
       if(current->getParent()->getColor() == 'b'){
-	cout << "Case2" << endl;
 	return;
       }
+      //case three
       if(current->getParent()->getParent() != NULL){
-	if(current->getParent()->getUncle() == NULL){
-	  cout << "UNCLE IS NULL" << endl;
-	}
 	if(current->getParent()->getColor() == 'r' && (current->getParent()->getUncle() != NULL && current->getParent()->getUncle()->getColor() == 'r')){
-	  cout << "Case3" << endl;
 	  caseThree(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
 	}
+	//the color conditions for case 4 and case 5 are the same so they are all nested in the same color-checking if statement.
 	if(current->getParent()->getColor() == 'r' && (current->getParent()->getUncle() == NULL || current->getParent()->getUncle()->getColor() == 'b')){
-	  cout << "IN HERE" << endl;
+	  //case 4
 	  if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() < current->getInformation()){
 	    caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
-	    cout << "Case4" << endl;
 	    current = current->getLeft();
 	  }
 	  else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getParent()->getInformation() >= current->getInformation()){
-	    cout << "Case4" << endl;
 	    caseFour(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
 	    current = current->getRight();
 	  }
-
-	  cout << "HI" << endl;
-	  if(current == NULL){
-	    cout << "Current is null" << endl;
-	  }
-	  cout << "Current: " << current->getInformation() << endl;
-	  cout << "Parent: " << current->getParent()->getInformation() << endl;
-	  cout << "Grandparent: " << current->getParent()->getParent()->getInformation() << endl;
-
-	  print(root, 0);
+	  //case 5 is called immediately after case 4.
 	  if(current->getParent()->getInformation() < current->getParent()->getParent()->getInformation() && current->getInformation() < current->getParent()->getInformation()){
-	    cout << "Case5" << endl;
 	    caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
 	    }
 	  else if(current->getParent()->getInformation() >= current->getParent()->getParent()->getInformation() && current->getInformation() >= current->getParent()->getInformation()){
-	    cout << "Case5" << endl;
 	    caseFive(root, current->getParent()->getParent(), current->getParent(), current->getParent()->getUncle(), current);
 	  }
 	  
@@ -345,10 +234,13 @@ void fixTree(Node* &root, Node* current){
 
 }
 
+//regular add function from binary search tree. Adds values to the tree
 void add(Node* &root, Node* current, Node* newNode){
+  //setting the root
     if(root == NULL){
         root = newNode;
     }
+    //if the current node is greater than the new node, the new node goes to the left of the current node.
     else if(current->getInformation() >= newNode->getInformation()){
         if(current->getLeft() == NULL){
             current->setLeft(newNode);
@@ -359,6 +251,7 @@ void add(Node* &root, Node* current, Node* newNode){
 	    return;
         }
     }
+    //otherwise the new node goes to the right.
     else if(current->getInformation() < newNode->getInformation()){
         if(current->getRight() == NULL){
             current->setRight(newNode);
@@ -369,75 +262,21 @@ void add(Node* &root, Node* current, Node* newNode){
 	    return;
         }
     }
+    //fixing the tree after every new node is added.
     fixTree(root, newNode);
 
 }
-
-//pretty sure this add is useless
-
-/*
-void add(Node* &root, Node* current, Node* newNode){
-    if(root == NULL){
-        root = newNode;
-	root->setColor('b');
-    }
-    else if(current->getInformation() >= newNode->getInformation()){
-        if(current->getLeft() == NULL){
-            current->setLeft(newNode);
-	    newNode->setParent(current);
-	    if(current->getColor() != 'b'){
-	      if(current->getUncle()->getColor() == 'r'){
-		caseThree(root, current->getParent(), current, current->getUncle(), newNode);
-	      }
-	      else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() <= current->getInformation()){
-		caseFour(root, current->getParent(), current, current->getUncle(), newNode);
-	      }
-	      else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() > current->getInformation()){
-		caseFive(root, current->getParent(), current, current->getUncle(), newNode);
-	      }
-	      
-	    }
-        }
-        else{
-            add(root, current->getLeft(), newNode);
-        }
-    }
-    else if(current->getInformation() < newNode->getInformation()){
-        if(current->getRight() == NULL){
-            current->setRight(newNode);
-            newNode->setParent(current);
-	    if(current->getColor() != 'b'){
-              if(current->getUncle()->getColor() == 'r'){
-                caseThree(root, current->getParent(), current, current->getUncle(), newNode);
-              }
-              else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() >= current->getInformation()){
-                caseFour(root, current->getParent(), current, current->getUncle(), newNode);
-              }
-              else if(current->getUncle()->getColor() == 'b' && current->getParent()->getInformation() < current->getInformation()){
-                caseFive(root, current->getParent(), current, current->getUncle(), newNode);
-              }
-
-            }
-        }
-        else{
-            add(root, current->getRight(), newNode);
-        }
-    }
-
-  
-
-}
-*/
+//printing out the tree
 void print(Node* current, int count){
-    if(current->getLeft() != NULL){
-        print(current->getLeft(), count + 1);
+    if(current->getRight() != NULL){
+        print(current->getRight(), count + 1);
     }
     for(int i = 0; i < count; i++){
         cout << '\t';
     }
     cout << current->getInformation() << " " << current->getColor() << endl;
-    if(current->getRight() != NULL){
-        print(current->getRight(), count + 1);
+    if(current->getLeft() != NULL){
+        print(current->getLeft(), count + 1);
     }
 
 }
